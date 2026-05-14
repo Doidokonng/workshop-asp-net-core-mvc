@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("SalesWebMvcContext") ?? throw new InvalidOperationException("Connection string 'SalesWebMvcContext' not found.");
 
-builder.Services.AddDbContext<SalesWebMvcContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<SalesWebMvcContext>(options => 
+options.UseMySql(connectionString,ServerVersion.AutoDetect(connectionString),
+        builder => builder.MigrationsAssembly("SalesWebMvc")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -22,12 +24,11 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
+app.UseStaticFiles();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 
 app.Run();
